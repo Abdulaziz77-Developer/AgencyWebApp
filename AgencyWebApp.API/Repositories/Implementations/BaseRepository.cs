@@ -29,33 +29,49 @@ namespace AgencyWebApp.API.Repositories.Implementations
             return entity;
         }
 
-        public async Task UpdateAsync(int id, object updateDto)
+        public virtual async Task<TEntity?> UpdateAsync(int id, TUpdateDto dto)
         {
             var entity = await GetByIdAsync(id);
-            if (entity == null)
-                throw new Exception($"{typeof(TEntity).Name} not found");
+            if (entity == null) return null;
 
-            var entry = _context.Entry(entity);
+            var dtoProperties = typeof(TUpdateDto).GetProperties();
+            var entityProperties = typeof(TEntity).GetProperties();
 
-            foreach (var prop in updateDto.GetType().GetProperties())
+            foreach (var prop in dtoProperties)
             {
-                var value = prop.GetValue(updateDto);
+                var value = prop.GetValue(dto);
+                bool shouldUpdate = false;
 
-                // проверяем на null / пустую строку / 0
-                if (value != null && !(value is string s && string.IsNullOrWhiteSpace(s)) && value.ToString() != "string" && value.ToString() != "0")
+                if (value != null)
                 {
-                    var entityProp = typeof(TEntity).GetProperty(prop.Name);
-                    if (entityProp != null)
+                    if (prop.PropertyType == typeof(string))
                     {
-                        entityProp.SetValue(entity, value);
-                        entry.Property(prop.Name).IsModified = true;
+                        var str = value as string;
+                        shouldUpdate = !string.IsNullOrWhiteSpace(str) && str != "string";
                     }
+                    else if (prop.PropertyType == typeof(int) || prop.PropertyType == typeof(decimal) || prop.PropertyType == typeof(double) || prop.PropertyType == typeof(float))
+                    {
+                        shouldUpdate = Convert.ToDecimal(value) != 0;
+                    }
+                    else
+                    {
+                        
+                        shouldUpdate = true;
+                    }
+                }
+
+                if (!shouldUpdate) continue;
+
+                var entityProp = entityProperties.FirstOrDefault(p => p.Name == prop.Name && p.PropertyType == prop.PropertyType);
+                if (entityProp != null && entityProp.CanWrite)
+                {
+                    entityProp.SetValue(entity, value);
                 }
             }
 
             await _context.SaveChangesAsync();
+            return entity;
         }
-
         public virtual async Task<bool> DeleteAsync(int id)
         {
             var entity = await GetByIdAsync(id);

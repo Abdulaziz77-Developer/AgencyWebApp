@@ -17,7 +17,7 @@ namespace AgencyWebApp.API.Controllers
             _authService = authService;
         }
 
-        // Регистрация пользователя
+        
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
@@ -32,7 +32,7 @@ namespace AgencyWebApp.API.Controllers
             }
         }
 
-        // Логин пользователя и получение JWT
+        
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {

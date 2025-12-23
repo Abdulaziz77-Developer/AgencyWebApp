@@ -9,7 +9,6 @@ namespace AgencyWebApp.API.Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        // DbSet для всех моделей
         public DbSet<User> Users => Set<User>();
         public DbSet<Hotel> Hotels => Set<Hotel>();
         public DbSet<Flight> Flights => Set<Flight>();

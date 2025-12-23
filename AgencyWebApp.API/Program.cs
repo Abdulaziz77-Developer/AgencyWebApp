@@ -9,30 +9,16 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ============================
-// DATABASE
-// ============================
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")
     )
 );
-
-// ============================
-// AUTOMAPPER
-// ============================
 builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
-
-// ============================
-// DEPENDENCY INJECTION
-// ============================
 builder.Services.AddRepositories();
 builder.Services.AddServices();
 builder.Services.AddAuth();
-
-// ============================
-// JWT AUTHENTICATION
-// ============================
 var jwtSecret = builder.Configuration["Jwt:Secret"]
     ?? throw new Exception("Jwt:Secret is missing in appsettings.json");
 
@@ -51,20 +37,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ClockSkew = TimeSpan.Zero
         };
     });
-
-// ============================
-// AUTHORIZATION
-// ============================
 builder.Services.AddAuthorization();
-
-// ============================
-// CONTROLLERS
-// ============================
 builder.Services.AddControllers();
-
-// ============================
-// SWAGGER + JWT
-// ============================
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -100,14 +74,8 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// ============================
-// BUILD APP
-// ============================
 var app = builder.Build();
 
-// ============================
-// MIDDLEWARE PIPELINE
-// ============================
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -115,8 +83,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-// ВАЖНО: сначала Authentication
 app.UseAuthentication();
 app.UseAuthorization();
 
