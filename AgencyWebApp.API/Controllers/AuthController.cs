@@ -16,8 +16,6 @@ namespace AgencyWebApp.API.Controllers
         {
             _authService = authService;
         }
-
-        
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
@@ -31,8 +29,6 @@ namespace AgencyWebApp.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
-        
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
@@ -47,5 +43,4 @@ namespace AgencyWebApp.API.Controllers
             }
         }
     }
-
 }
