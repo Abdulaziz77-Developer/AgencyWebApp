@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AgencyWebApp.API.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [AllowAnonymous]
     [ApiController]
     [Route("api/[controller]")]
     public class UsersController : ControllerBase

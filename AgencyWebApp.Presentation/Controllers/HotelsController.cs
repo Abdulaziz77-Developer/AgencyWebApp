@@ -1,12 +1,11 @@
 ﻿using AgencyWebApp.Application.DTOs.HotelDTOs;
 using AgencyWebApp.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AgencyWebApp.API.Controllers
 {
-    [Authorize]
+    [AllowAnonymous]
     [ApiController]
     [Route("api/[controller]")]
     public class HotelsController : ControllerBase
