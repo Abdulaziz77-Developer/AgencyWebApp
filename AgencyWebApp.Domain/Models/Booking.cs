@@ -6,6 +6,7 @@
 
         public DateTime BookingDate { get; set; } = DateTime.UtcNow;
 
+        public bool Status { get; set; }
         public int UserId { get; set; }
         public User User { get; set; } = null!;
 

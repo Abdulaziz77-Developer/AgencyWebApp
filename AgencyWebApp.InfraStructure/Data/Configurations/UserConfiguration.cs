@@ -1,6 +1,4 @@
-﻿
-
-using AgencyWebApp.Domain.Models;
+﻿using AgencyWebApp.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -26,6 +24,13 @@ namespace AgencyWebApp.Infrastructure.Data.Configurations
             builder.Property(u => u.Role)
                    .HasConversion<int>()
                    .IsRequired();
+
+            // precision для координат домашнего адреса (nullable поддерживается)
+            builder.Property(u => u.HomeLatitude)
+                   .HasPrecision(9, 6);
+
+            builder.Property(u => u.HomeLongitude)
+                   .HasPrecision(9, 6);
 
             builder.HasMany(u => u.Reviews)
                    .WithOne(r => r.User)

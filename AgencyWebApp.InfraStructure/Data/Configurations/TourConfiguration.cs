@@ -1,6 +1,4 @@
-﻿
-
-using AgencyWebApp.Domain.Models;
+﻿using AgencyWebApp.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -18,6 +16,13 @@ namespace AgencyWebApp.Infrastructure.Data.Configurations
 
             builder.Property(t => t.Price)
                    .HasColumnType("decimal(18,2)");
+
+            // precision для координат старта тура
+            builder.Property(t => t.StartLatitude)
+                   .HasPrecision(9, 6);
+
+            builder.Property(t => t.StartLongitude)
+                   .HasPrecision(9, 6);
 
             builder.HasOne(t => t.Hotel)
                    .WithMany(h => h.Tours)

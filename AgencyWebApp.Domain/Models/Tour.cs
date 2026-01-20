@@ -8,6 +8,9 @@
         public decimal Price { get; set; }
         public string Region { get; set; } = "";
         public string PhotoUrl { get; set; } = "";
+        public int Duration { get; set; }
+        public int Rating { get; set; }
+        public bool Status { get; set; }
 
         public int HotelId { get; set; }
         public Hotel Hotel { get; set; } = null!;

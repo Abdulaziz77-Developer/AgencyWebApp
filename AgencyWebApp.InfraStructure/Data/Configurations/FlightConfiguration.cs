@@ -1,6 +1,4 @@
-﻿
-
-using AgencyWebApp.Domain.Models;
+﻿using AgencyWebApp.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

@@ -12,5 +12,7 @@
         public decimal FromLongitude { get; set; }
         public decimal ToLatitude { get; set; }
         public decimal ToLongitude { get; set; }
+        public decimal Price { get; set; }
+        public string Status { get; set; } = "";    
     }
 }
