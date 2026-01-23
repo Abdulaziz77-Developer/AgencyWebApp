@@ -4,6 +4,7 @@ using AgencyWebApp.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AgencyWebApp.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260121063443_RemoveHotelFromTour")]
+    partial class RemoveHotelFromTour
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -410,9 +413,6 @@ namespace AgencyWebApp.Infrastructure.Migrations
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
                     b.HasKey("Id");
 
                     b.ToTable("Hotels");
@@ -430,8 +430,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Name = "Dushanbe Serena Hotel",
                             PhotoUrl = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800",
                             Price = 160.00m,
-                            Rating = 5,
-                            Status = false
+                            Rating = 5
                         },
                         new
                         {
@@ -445,8 +444,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Name = "Hyatt Regency Dushanbe",
                             PhotoUrl = "https://images.unsplash.com/photo-1551882547-ff43c63e1c04?auto=format&fit=crop&w=800",
                             Price = 185.00m,
-                            Rating = 5,
-                            Status = false
+                            Rating = 5
                         },
                         new
                         {
@@ -460,8 +458,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Name = "Atlas Hotel",
                             PhotoUrl = "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800",
                             Price = 85.00m,
-                            Rating = 4,
-                            Status = false
+                            Rating = 4
                         },
                         new
                         {
@@ -475,8 +472,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Name = "Armon Aparthotel",
                             PhotoUrl = "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800",
                             Price = 75.00m,
-                            Rating = 4,
-                            Status = false
+                            Rating = 4
                         },
                         new
                         {
@@ -490,8 +486,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Name = "Sugdiyon Hotel",
                             PhotoUrl = "https://images.unsplash.com/photo-1561501900-3701fa6a0864?auto=format&fit=crop&w=800",
                             Price = 55.00m,
-                            Rating = 3,
-                            Status = false
+                            Rating = 3
                         },
                         new
                         {
@@ -505,8 +500,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Name = "Karon Palace",
                             PhotoUrl = "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=800",
                             Price = 95.00m,
-                            Rating = 5,
-                            Status = false
+                            Rating = 5
                         },
                         new
                         {
@@ -520,8 +514,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Name = "Lal Hotel",
                             PhotoUrl = "https://images.unsplash.com/photo-1582719478250-c89cae4df85b?auto=format&fit=crop&w=800",
                             Price = 65.00m,
-                            Rating = 4,
-                            Status = false
+                            Rating = 4
                         },
                         new
                         {
@@ -535,8 +528,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Name = "Grand Hotel Bokhtar",
                             PhotoUrl = "https://images.unsplash.com/photo-1495365200479-c4ed1d35e1aa?auto=format&fit=crop&w=800",
                             Price = 60.00m,
-                            Rating = 3,
-                            Status = false
+                            Rating = 3
                         },
                         new
                         {
@@ -550,8 +542,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Name = "Seven In Boutique",
                             PhotoUrl = "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800",
                             Price = 90.00m,
-                            Rating = 4,
-                            Status = false
+                            Rating = 4
                         },
                         new
                         {
@@ -565,8 +556,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Name = "Hilton Dushanbe",
                             PhotoUrl = "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800",
                             Price = 145.00m,
-                            Rating = 5,
-                            Status = false
+                            Rating = 5
                         });
                 });
 
@@ -961,7 +951,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 1,
                             Email = "alisher@mail.tj",
                             FullName = "Алишер Саидов",
-                            Password = "$2a$11$RFSOOYEA.tpejpq8VE0miuEEBYGnfOLcmESifkA4.d6cXY7zUbHmq",
+                            Password = "$2a$11$DYv/aIw4.MZ1Nxm.LjFoie0cC4P5oWAFbUeHlmb5HTNuVuER.pGDu",
                             Role = 1
                         },
                         new
@@ -969,7 +959,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 2,
                             Email = "madina@gmail.com",
                             FullName = "Мадина Каримова",
-                            Password = "$2a$11$RFSOOYEA.tpejpq8VE0miuEEBYGnfOLcmESifkA4.d6cXY7zUbHmq",
+                            Password = "$2a$11$DYv/aIw4.MZ1Nxm.LjFoie0cC4P5oWAFbUeHlmb5HTNuVuER.pGDu",
                             Role = 1
                         },
                         new
@@ -977,7 +967,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 3,
                             Email = "bakhtier@list.ru",
                             FullName = "Бахтиёр Назаров",
-                            Password = "$2a$11$RFSOOYEA.tpejpq8VE0miuEEBYGnfOLcmESifkA4.d6cXY7zUbHmq",
+                            Password = "$2a$11$DYv/aIw4.MZ1Nxm.LjFoie0cC4P5oWAFbUeHlmb5HTNuVuER.pGDu",
                             Role = 1
                         },
                         new
@@ -985,7 +975,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 4,
                             Email = "nigina@yandex.ru",
                             FullName = "Нигина Рахимова",
-                            Password = "$2a$11$RFSOOYEA.tpejpq8VE0miuEEBYGnfOLcmESifkA4.d6cXY7zUbHmq",
+                            Password = "$2a$11$DYv/aIw4.MZ1Nxm.LjFoie0cC4P5oWAFbUeHlmb5HTNuVuER.pGDu",
                             Role = 1
                         },
                         new
@@ -993,7 +983,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 5,
                             Email = "parviz@outlook.com",
                             FullName = "Парвиз Ходжаев",
-                            Password = "$2a$11$RFSOOYEA.tpejpq8VE0miuEEBYGnfOLcmESifkA4.d6cXY7zUbHmq",
+                            Password = "$2a$11$DYv/aIw4.MZ1Nxm.LjFoie0cC4P5oWAFbUeHlmb5HTNuVuER.pGDu",
                             Role = 1
                         },
                         new
@@ -1001,7 +991,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 6,
                             Email = "zarina@mail.tj",
                             FullName = "Зарина Олимова",
-                            Password = "$2a$11$RFSOOYEA.tpejpq8VE0miuEEBYGnfOLcmESifkA4.d6cXY7zUbHmq",
+                            Password = "$2a$11$DYv/aIw4.MZ1Nxm.LjFoie0cC4P5oWAFbUeHlmb5HTNuVuER.pGDu",
                             Role = 1
                         },
                         new
@@ -1009,7 +999,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 7,
                             Email = "rustam@google.com",
                             FullName = "Рустам Эшонов",
-                            Password = "$2a$11$RFSOOYEA.tpejpq8VE0miuEEBYGnfOLcmESifkA4.d6cXY7zUbHmq",
+                            Password = "$2a$11$DYv/aIw4.MZ1Nxm.LjFoie0cC4P5oWAFbUeHlmb5HTNuVuER.pGDu",
                             Role = 1
                         },
                         new
@@ -1017,7 +1007,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 8,
                             Email = "sitora@inbox.ru",
                             FullName = "Ситора Джумаева",
-                            Password = "$2a$11$RFSOOYEA.tpejpq8VE0miuEEBYGnfOLcmESifkA4.d6cXY7zUbHmq",
+                            Password = "$2a$11$DYv/aIw4.MZ1Nxm.LjFoie0cC4P5oWAFbUeHlmb5HTNuVuER.pGDu",
                             Role = 1
                         },
                         new
@@ -1025,7 +1015,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 9,
                             Email = "firdavs@rambler.ru",
                             FullName = "Фирдавс Гафуров",
-                            Password = "$2a$11$RFSOOYEA.tpejpq8VE0miuEEBYGnfOLcmESifkA4.d6cXY7zUbHmq",
+                            Password = "$2a$11$DYv/aIw4.MZ1Nxm.LjFoie0cC4P5oWAFbUeHlmb5HTNuVuER.pGDu",
                             Role = 1
                         },
                         new
@@ -1033,7 +1023,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 10,
                             Email = "lola@tj-travel.tj",
                             FullName = "Лола Шарипова",
-                            Password = "$2a$11$RFSOOYEA.tpejpq8VE0miuEEBYGnfOLcmESifkA4.d6cXY7zUbHmq",
+                            Password = "$2a$11$DYv/aIw4.MZ1Nxm.LjFoie0cC4P5oWAFbUeHlmb5HTNuVuER.pGDu",
                             Role = 1
                         });
                 });

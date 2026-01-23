@@ -43,7 +43,10 @@ namespace AgencyWebApp.Application.Services.Implementations
             var hotel = await _hotelRepo.GetByIdAsync(id);
             if (hotel == null)
                 throw new Exception("Hotel not found");
-
+            if (dto.Status)
+            {
+                hotel.Status = dto.Status;
+            }
             // Строки — защищаемся от Swagger "string" и пустых значений
             if (!string.IsNullOrWhiteSpace(dto.Name))
                 hotel.Name = dto.Name;

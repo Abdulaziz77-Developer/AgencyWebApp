@@ -9,6 +9,8 @@ namespace AgencyWebApp.Infrastructure.Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) 
         {
+        //    Database.EnsureDeleted();
+        //    Database.EnsureCreated();
         }
 
         public DbSet<User> Users => Set<User>();

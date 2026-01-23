@@ -51,7 +51,10 @@ namespace AgencyWebApp.Application.Services.Implementations
 
             if (dto.FlightId.HasValue)
                 booking.FlightId = dto.FlightId.Value;
-
+            if(dto.Status)
+            {
+                booking.Status = dto.Status;
+            }
             await _bookingRepo.SaveChangesAsync();
             return _mapper.Map<BookingDto>(booking);
         }

@@ -11,5 +11,7 @@
         public decimal? Longitude { get; set; }
         public decimal Price  { get; set; }
         public string? PhotoUrl { get; set; }
+       
+        public bool Status { get; set; }
     }
 }

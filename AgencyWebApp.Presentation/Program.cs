@@ -1,6 +1,7 @@
 using AgencyWebApp.API.Extensions;
 using AgencyWebApp.Application.Profiles;
 using AgencyWebApp.Infrastructure.Data;
+using Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -12,9 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")
-    )
-);
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        b => b.MigrationsAssembly("AgencyWebApp.Infrastructure") // Укажите имя вашего проекта с инфраструктурой
+    ));
 builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 builder.Services.AddRepositories();
 builder.Services.AddServices();

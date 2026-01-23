@@ -12,9 +12,6 @@
         public int Rating { get; set; }
         public bool Status { get; set; }
 
-        public int HotelId { get; set; }
-        public Hotel Hotel { get; set; } = null!;
-
         public decimal StartLatitude { get; set; }
         public decimal StartLongitude { get; set; }
 

@@ -50,10 +50,9 @@ namespace AgencyWebApp.Application.Services.Implementations
             if (dto.Price.HasValue) tour.Price = dto.Price.Value;
             if (!string.IsNullOrWhiteSpace(dto.Region)) tour.Region = dto.Region;
             if (!string.IsNullOrWhiteSpace(dto.PhotoUrl)) tour.PhotoUrl = dto.PhotoUrl;
-            if (dto.HotelId.HasValue) tour.HotelId = dto.HotelId.Value;
             if (dto.StartLatitude.HasValue) tour.StartLatitude = dto.StartLatitude.Value;
             if (dto.StartLongitude.HasValue) tour.StartLongitude = dto.StartLongitude.Value;
-
+            tour.Status = dto.Status;
             await _tourRepo.SaveChangesAsync();
             return _mapper.Map<TourDto>(tour);
         }

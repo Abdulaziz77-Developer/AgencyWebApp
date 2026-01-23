@@ -8,6 +8,7 @@
         public string Region { get; set; } = "";
         public string PhotoUrl { get; set; } = "";
         public int HotelId { get; set; }
+        public bool Status { get; set; }
         public decimal StartLatitude { get; set; }
         public decimal StartLongitude { get; set; }
     }

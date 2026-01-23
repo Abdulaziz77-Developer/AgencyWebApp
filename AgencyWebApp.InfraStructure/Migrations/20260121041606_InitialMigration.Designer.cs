@@ -4,6 +4,7 @@ using AgencyWebApp.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AgencyWebApp.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260121041606_InitialMigration")]
+    partial class InitialMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -410,9 +413,6 @@ namespace AgencyWebApp.Infrastructure.Migrations
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
                     b.HasKey("Id");
 
                     b.ToTable("Hotels");
@@ -430,8 +430,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Name = "Dushanbe Serena Hotel",
                             PhotoUrl = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800",
                             Price = 160.00m,
-                            Rating = 5,
-                            Status = false
+                            Rating = 5
                         },
                         new
                         {
@@ -445,8 +444,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Name = "Hyatt Regency Dushanbe",
                             PhotoUrl = "https://images.unsplash.com/photo-1551882547-ff43c63e1c04?auto=format&fit=crop&w=800",
                             Price = 185.00m,
-                            Rating = 5,
-                            Status = false
+                            Rating = 5
                         },
                         new
                         {
@@ -460,8 +458,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Name = "Atlas Hotel",
                             PhotoUrl = "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800",
                             Price = 85.00m,
-                            Rating = 4,
-                            Status = false
+                            Rating = 4
                         },
                         new
                         {
@@ -475,8 +472,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Name = "Armon Aparthotel",
                             PhotoUrl = "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800",
                             Price = 75.00m,
-                            Rating = 4,
-                            Status = false
+                            Rating = 4
                         },
                         new
                         {
@@ -490,8 +486,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Name = "Sugdiyon Hotel",
                             PhotoUrl = "https://images.unsplash.com/photo-1561501900-3701fa6a0864?auto=format&fit=crop&w=800",
                             Price = 55.00m,
-                            Rating = 3,
-                            Status = false
+                            Rating = 3
                         },
                         new
                         {
@@ -505,8 +500,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Name = "Karon Palace",
                             PhotoUrl = "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=800",
                             Price = 95.00m,
-                            Rating = 5,
-                            Status = false
+                            Rating = 5
                         },
                         new
                         {
@@ -520,8 +514,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Name = "Lal Hotel",
                             PhotoUrl = "https://images.unsplash.com/photo-1582719478250-c89cae4df85b?auto=format&fit=crop&w=800",
                             Price = 65.00m,
-                            Rating = 4,
-                            Status = false
+                            Rating = 4
                         },
                         new
                         {
@@ -535,8 +528,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Name = "Grand Hotel Bokhtar",
                             PhotoUrl = "https://images.unsplash.com/photo-1495365200479-c4ed1d35e1aa?auto=format&fit=crop&w=800",
                             Price = 60.00m,
-                            Rating = 3,
-                            Status = false
+                            Rating = 3
                         },
                         new
                         {
@@ -550,8 +542,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Name = "Seven In Boutique",
                             PhotoUrl = "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800",
                             Price = 90.00m,
-                            Rating = 4,
-                            Status = false
+                            Rating = 4
                         },
                         new
                         {
@@ -565,8 +556,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Name = "Hilton Dushanbe",
                             PhotoUrl = "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800",
                             Price = 145.00m,
-                            Rating = 5,
-                            Status = false
+                            Rating = 5
                         });
                 });
 
@@ -714,6 +704,9 @@ namespace AgencyWebApp.Infrastructure.Migrations
                     b.Property<int>("Duration")
                         .HasColumnType("int");
 
+                    b.Property<int>("HotelId")
+                        .HasColumnType("int");
+
                     b.Property<string>("PhotoUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -746,6 +739,8 @@ namespace AgencyWebApp.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("HotelId");
+
                     b.ToTable("Tours");
 
                     b.HasData(
@@ -754,6 +749,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 1,
                             Description = "A legendary road trip through the high-altitude Pamir mountains and Khorog city.",
                             Duration = 7,
+                            HotelId = 7,
                             PhotoUrl = "https://images.unsplash.com/photo-1581414441460-7058866e409b?auto=format&fit=crop&w=800",
                             Price = 550.00m,
                             Rating = 5,
@@ -768,6 +764,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 2,
                             Description = "Explore the ruins of Sarazm and the stunning Seven Lakes (Haft Kul).",
                             Duration = 3,
+                            HotelId = 4,
                             PhotoUrl = "https://images.unsplash.com/photo-1541829070764-84a7d30dee6b?auto=format&fit=crop&w=800",
                             Price = 120.00m,
                             Rating = 5,
@@ -782,6 +779,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 3,
                             Description = "Visit the National Museum, Ismoili Somoni monument, and local bazaars.",
                             Duration = 2,
+                            HotelId = 1,
                             PhotoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/National_Museum_of_Tajikistan.jpg/800px-National_Museum_of_Tajikistan.jpg",
                             Price = 85.00m,
                             Rating = 4,
@@ -796,6 +794,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 4,
                             Description = "Visit the lake of Alexander the Great and the famous 'Fan Niagara' waterfall.",
                             Duration = 3,
+                            HotelId = 2,
                             PhotoUrl = "https://images.unsplash.com/photo-1563290328-9710279603e8?auto=format&fit=crop&w=800",
                             Price = 150.00m,
                             Rating = 5,
@@ -810,6 +809,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 5,
                             Description = "Relax at the famous Soviet-era balneological steam sanatorium.",
                             Duration = 10,
+                            HotelId = 10,
                             PhotoUrl = "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=800",
                             Price = 300.00m,
                             Rating = 4,
@@ -824,6 +824,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 6,
                             Description = "High-altitude nomadic life, yaks, and moon-like landscapes near the Chinese border.",
                             Duration = 12,
+                            HotelId = 6,
                             PhotoUrl = "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800",
                             Price = 750.00m,
                             Rating = 5,
@@ -838,6 +839,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 7,
                             Description = "Historical tour to the 5th-century fortress and the Syr Darya river.",
                             Duration = 2,
+                            HotelId = 5,
                             PhotoUrl = "https://images.unsplash.com/photo-1523393160341-9c869066666d?auto=format&fit=crop&w=800",
                             Price = 90.00m,
                             Rating = 4,
@@ -852,6 +854,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 8,
                             Description = "Eco-trip to one of the most beautiful and remote valleys in Tajikistan.",
                             Duration = 5,
+                            HotelId = 8,
                             PhotoUrl = "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800",
                             Price = 210.00m,
                             Rating = 5,
@@ -866,6 +869,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 9,
                             Description = "A day trip to the reconstructed palace of the medieval Kings of Khuttal.",
                             Duration = 1,
+                            HotelId = 9,
                             PhotoUrl = "https://images.unsplash.com/photo-1590059132218-22ca52103723?auto=format&fit=crop&w=800",
                             Price = 45.00m,
                             Rating = 4,
@@ -880,6 +884,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 10,
                             Description = "The most popular recreation area near Dushanbe for rivers and hiking.",
                             Duration = 1,
+                            HotelId = 3,
                             PhotoUrl = "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=800",
                             Price = 35.00m,
                             Rating = 5,
@@ -961,7 +966,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 1,
                             Email = "alisher@mail.tj",
                             FullName = "Алишер Саидов",
-                            Password = "$2a$11$RFSOOYEA.tpejpq8VE0miuEEBYGnfOLcmESifkA4.d6cXY7zUbHmq",
+                            Password = "$2a$11$TQlTnjoNu3KkexaVhmS3J.4UV7uPknqXR2e2XaMDdKNaNbNU14Tje",
                             Role = 1
                         },
                         new
@@ -969,7 +974,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 2,
                             Email = "madina@gmail.com",
                             FullName = "Мадина Каримова",
-                            Password = "$2a$11$RFSOOYEA.tpejpq8VE0miuEEBYGnfOLcmESifkA4.d6cXY7zUbHmq",
+                            Password = "$2a$11$TQlTnjoNu3KkexaVhmS3J.4UV7uPknqXR2e2XaMDdKNaNbNU14Tje",
                             Role = 1
                         },
                         new
@@ -977,7 +982,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 3,
                             Email = "bakhtier@list.ru",
                             FullName = "Бахтиёр Назаров",
-                            Password = "$2a$11$RFSOOYEA.tpejpq8VE0miuEEBYGnfOLcmESifkA4.d6cXY7zUbHmq",
+                            Password = "$2a$11$TQlTnjoNu3KkexaVhmS3J.4UV7uPknqXR2e2XaMDdKNaNbNU14Tje",
                             Role = 1
                         },
                         new
@@ -985,7 +990,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 4,
                             Email = "nigina@yandex.ru",
                             FullName = "Нигина Рахимова",
-                            Password = "$2a$11$RFSOOYEA.tpejpq8VE0miuEEBYGnfOLcmESifkA4.d6cXY7zUbHmq",
+                            Password = "$2a$11$TQlTnjoNu3KkexaVhmS3J.4UV7uPknqXR2e2XaMDdKNaNbNU14Tje",
                             Role = 1
                         },
                         new
@@ -993,7 +998,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 5,
                             Email = "parviz@outlook.com",
                             FullName = "Парвиз Ходжаев",
-                            Password = "$2a$11$RFSOOYEA.tpejpq8VE0miuEEBYGnfOLcmESifkA4.d6cXY7zUbHmq",
+                            Password = "$2a$11$TQlTnjoNu3KkexaVhmS3J.4UV7uPknqXR2e2XaMDdKNaNbNU14Tje",
                             Role = 1
                         },
                         new
@@ -1001,7 +1006,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 6,
                             Email = "zarina@mail.tj",
                             FullName = "Зарина Олимова",
-                            Password = "$2a$11$RFSOOYEA.tpejpq8VE0miuEEBYGnfOLcmESifkA4.d6cXY7zUbHmq",
+                            Password = "$2a$11$TQlTnjoNu3KkexaVhmS3J.4UV7uPknqXR2e2XaMDdKNaNbNU14Tje",
                             Role = 1
                         },
                         new
@@ -1009,7 +1014,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 7,
                             Email = "rustam@google.com",
                             FullName = "Рустам Эшонов",
-                            Password = "$2a$11$RFSOOYEA.tpejpq8VE0miuEEBYGnfOLcmESifkA4.d6cXY7zUbHmq",
+                            Password = "$2a$11$TQlTnjoNu3KkexaVhmS3J.4UV7uPknqXR2e2XaMDdKNaNbNU14Tje",
                             Role = 1
                         },
                         new
@@ -1017,7 +1022,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 8,
                             Email = "sitora@inbox.ru",
                             FullName = "Ситора Джумаева",
-                            Password = "$2a$11$RFSOOYEA.tpejpq8VE0miuEEBYGnfOLcmESifkA4.d6cXY7zUbHmq",
+                            Password = "$2a$11$TQlTnjoNu3KkexaVhmS3J.4UV7uPknqXR2e2XaMDdKNaNbNU14Tje",
                             Role = 1
                         },
                         new
@@ -1025,7 +1030,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 9,
                             Email = "firdavs@rambler.ru",
                             FullName = "Фирдавс Гафуров",
-                            Password = "$2a$11$RFSOOYEA.tpejpq8VE0miuEEBYGnfOLcmESifkA4.d6cXY7zUbHmq",
+                            Password = "$2a$11$TQlTnjoNu3KkexaVhmS3J.4UV7uPknqXR2e2XaMDdKNaNbNU14Tje",
                             Role = 1
                         },
                         new
@@ -1033,7 +1038,7 @@ namespace AgencyWebApp.Infrastructure.Migrations
                             Id = 10,
                             Email = "lola@tj-travel.tj",
                             FullName = "Лола Шарипова",
-                            Password = "$2a$11$RFSOOYEA.tpejpq8VE0miuEEBYGnfOLcmESifkA4.d6cXY7zUbHmq",
+                            Password = "$2a$11$TQlTnjoNu3KkexaVhmS3J.4UV7uPknqXR2e2XaMDdKNaNbNU14Tje",
                             Role = 1
                         });
                 });
@@ -1102,6 +1107,17 @@ namespace AgencyWebApp.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("AgencyWebApp.Domain.Models.Tour", b =>
+                {
+                    b.HasOne("AgencyWebApp.Domain.Models.Hotel", "Hotel")
+                        .WithMany("Tours")
+                        .HasForeignKey("HotelId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Hotel");
+                });
+
             modelBuilder.Entity("AgencyWebApp.Domain.Models.TourPoint", b =>
                 {
                     b.HasOne("AgencyWebApp.Domain.Models.Tour", "Tour")
@@ -1125,6 +1141,8 @@ namespace AgencyWebApp.Infrastructure.Migrations
                     b.Navigation("Bookings");
 
                     b.Navigation("Reviews");
+
+                    b.Navigation("Tours");
                 });
 
             modelBuilder.Entity("AgencyWebApp.Domain.Models.Tour", b =>
