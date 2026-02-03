@@ -1,6 +1,8 @@
 using AgencyWebApp.API.Extensions;
 using AgencyWebApp.Application.Profiles;
+using AgencyWebApp.Application.Services.Interfaces;
 using AgencyWebApp.Infrastructure.Data;
+using AgencyWebApp.Infrastructure.Services;
 using Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -12,12 +14,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
-        b => b.MigrationsAssembly("AgencyWebApp.Infrastructure") // Укажите имя вашего проекта с инфраструктурой
+        b => b.MigrationsAssembly("AgencyWebApp.Infrastructure") // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     ));
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+    });
+});
+builder.Services.AddMemoryCache(); 
 builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 builder.Services.AddRepositories();
 builder.Services.AddServices();
 builder.Services.AddAuth();
+builder.Services.AddScoped<IEmailService, GmailService>();
 var jwtSecret = builder.Configuration["Jwt:Secret"]
     ?? throw new Exception("Jwt:Secret is missing in appsettings.json");
 
@@ -54,7 +65,7 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Введите JWT токен так: Bearer {token}"
+        Description = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ JWT пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ: Bearer {token}"
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
