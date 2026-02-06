@@ -62,5 +62,28 @@ namespace AgencyWebApp.Infrastructure.Services
             // Просто вызываем базовый метод
             await SendEmailAsync(to, subject, htmlBody);
         }
+        public async Task SendBookingConfirmedAsync(string to, string bookingDetails)
+        {
+            string subject = "Ваше бронирование подтверждено! 🎉";
+            string body = $@"
+            <h3>Отличные новости!</h3>
+            <p>Администратор подтвердил ваше бронирование.</p>
+            <p><strong>Детали:</strong> {bookingDetails}</p>
+            <p>Ждем вас!</p>";
+    
+            await SendEmailAsync(to, subject, body);
+        }
+
+        public async Task SendBookingRejectedAsync(string to, string reason)
+        {
+            string subject = "Обновление по вашему бронированию";
+            string body = $@"
+            <h3>К сожалению, бронирование отклонено</h3>
+            <p>Администратор не смог подтвердить ваш запрос.</p>
+            {(string.IsNullOrEmpty(reason) ? "" : $"<p><strong>Причина:</strong> {reason}</p>")}
+            <p>Пожалуйста, свяжитесь с нами для уточнения деталей.</p>";
+
+            await SendEmailAsync(to, subject, body);
+        }
     }
 }

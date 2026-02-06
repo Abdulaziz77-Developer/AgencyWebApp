@@ -4,8 +4,11 @@ namespace AgencyWebApp.Application.Services.Interfaces
     {
         // Базовый метод для любых писем
         Task SendEmailAsync(string to, string subject, string body);
-        
+
         // Удобный метод именно для OTP кода
         Task SendOtpEmailAsync(string to, string code);
+
+        Task SendBookingConfirmedAsync(string to, string bookingDetails);
+        Task SendBookingRejectedAsync(string to, string reason);
     }
 }

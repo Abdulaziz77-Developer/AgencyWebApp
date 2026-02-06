@@ -47,6 +47,22 @@ namespace AgencyWebApp.API.Controllers
             }
             return BadRequest(new { success = false, message = "Неверный или просроченный код" });
         }
+        [HttpPost("confirm-notification")]
+        public async Task<IActionResult> SendConfirmation([FromQuery] string email, [FromQuery] int id)
+        {
+            if (string.IsNullOrEmpty(email)) return BadRequest("Email is required");
+
+            await _emailService.SendBookingConfirmedAsync(email, $"Бронирование #{id}");
+            return Ok(new { message = "Письмо о подтверждении отправлено" });
+        }
+        [HttpPost("reject-notification")]
+        public async Task<IActionResult> SendRejection([FromQuery] string email, [FromQuery] int id)
+        {
+            if (string.IsNullOrEmpty(email)) return BadRequest("Email is required");
+
+            await _emailService.SendBookingRejectedAsync(email, "К сожалению, мы не смогли подтвердить ваше бронирование.");
+            return Ok(new { message = "Письмо об отказе отправлено" });
+        }
     }
 
     // Модели для запросов
