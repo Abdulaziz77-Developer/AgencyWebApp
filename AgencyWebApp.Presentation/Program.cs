@@ -14,7 +14,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
-        b => b.MigrationsAssembly("AgencyWebApp.Infrastructure") // ������� ��� ������ ������� � ���������������
+        sqlServerOptionsAction: sqlOptions =>
+        {
+            // Все настройки SQL Server должны быть ЗДЕСЬ
+            sqlOptions.MigrationsAssembly("AgencyWebApp.Infrastructure");
+            
+            sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 15,
+                maxRetryDelay: TimeSpan.FromSeconds(30),
+                errorNumbersToAdd: null);
+        }
     ));
 builder.Services.AddCors(options =>
 {
@@ -84,6 +93,8 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -95,6 +106,23 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+
+// using (var scope = app.Services.CreateScope())
+// {
+//     var services = scope.ServiceProvider;
+//     try
+//     {
+//         var context = services.GetRequiredService<AppDbContext>();
+//         Console.WriteLine("--> Проверка базы данных...");
+//         // Эта команда создаст саму базу и таблицы
+//         context.Database.EnsureCreated(); 
+//         Console.WriteLine("--> УРА! База данных TravelDb готова к работе.");
+//     }
+//     catch (Exception ex)
+//     {
+//         Console.WriteLine($"--> ОШИБКА СОЗДАНИЯ БАЗЫ: {ex.Message}");
+//     }
+// }
 
 app.MapControllers();
 app.Run();
