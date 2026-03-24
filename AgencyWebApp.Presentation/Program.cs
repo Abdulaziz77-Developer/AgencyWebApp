@@ -107,22 +107,22 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// using (var scope = app.Services.CreateScope())
-// {
-//     var services = scope.ServiceProvider;
-//     try
-//     {
-//         var context = services.GetRequiredService<AppDbContext>();
-//         Console.WriteLine("--> Проверка базы данных...");
-//         // Эта команда создаст саму базу и таблицы
-//         context.Database.EnsureCreated(); 
-//         Console.WriteLine("--> УРА! База данных TravelDb готова к работе.");
-//     }
-//     catch (Exception ex)
-//     {
-//         Console.WriteLine($"--> ОШИБКА СОЗДАНИЯ БАЗЫ: {ex.Message}");
-//     }
-// }
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<AppDbContext>();
+        Console.WriteLine("--> Проверка базы данных...");
+        // Эта команда создаст саму базу и таблицы
+        context.Database.EnsureCreated(); 
+        Console.WriteLine("--> УРА! База данных TravelDb готова к работе.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"--> ОШИБКА СОЗДАНИЯ БАЗЫ: {ex.Message}");
+    }
+}
 
 app.MapControllers();
 app.Run();

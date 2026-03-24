@@ -29,8 +29,8 @@ namespace AgencyWebApp.Infrastructure.Data.Configurations
                 Id = 1,
                 AirPlaneName = "Boeing 737-800",
                 FlightNumber = 101,
-                FromCity = "Moscow (DME)",
-                ToCity = "Dushanbe (DYU)",
+                FromCity = "Москва (DME)",
+                ToCity = "Душанбе (DYU)",
                 DepartureTime = new DateTime(2026, 05, 10, 12, 0, 0),
                 ArrivalTime = new DateTime(2026, 05, 10, 18, 0, 0),
                 FromLatitude = 55.4103m,
@@ -38,15 +38,15 @@ namespace AgencyWebApp.Infrastructure.Data.Configurations
                 ToLatitude = 38.5433m,
                 ToLongitude = 68.8249m,
                 Price = 250.00m,
-                Status = "Scheduled"
+                Status = "Запланирован"
             },
             new Flight
             {
                 Id = 2,
                 AirPlaneName = "Airbus A320",
                 FlightNumber = 202,
-                FromCity = "Istanbul (IST)",
-                ToCity = "Dushanbe (DYU)",
+                FromCity = "Истанбул (IST)",
+                ToCity = "Душанбе (DYU)",
                 DepartureTime = new DateTime(2026, 05, 12, 09, 30, 0),
                 ArrivalTime = new DateTime(2026, 05, 12, 16, 15, 0),
                 FromLatitude = 41.2753m,
@@ -54,15 +54,15 @@ namespace AgencyWebApp.Infrastructure.Data.Configurations
                 ToLatitude = 38.5433m,
                 ToLongitude = 68.8249m,
                 Price = 320.00m,
-                Status = "Scheduled"
+                Status = "Запланирован"
             },
             new Flight
             {
                 Id = 3,
                 AirPlaneName = "Boeing 737-300",
                 FlightNumber = 303,
-                FromCity = "Dushanbe (DYU)",
-                ToCity = "Khujand (LBD)",
+                FromCity = "Душанбе (DYU)",
+                ToCity = "Худжанд (LBD)",
                 DepartureTime = new DateTime(2026, 05, 15, 08, 00, 0),
                 ArrivalTime = new DateTime(2026, 05, 15, 08, 50, 0),
                 FromLatitude = 38.5433m,
@@ -70,15 +70,15 @@ namespace AgencyWebApp.Infrastructure.Data.Configurations
                 ToLatitude = 40.2152m,
                 ToLongitude = 69.6944m,
                 Price = 45.00m,
-                Status = "Active"
+                Status = "Активный"
             },
             new Flight
             {
                 Id = 4,
                 AirPlaneName = "Boeing 737-800",
                 FlightNumber = 404,
-                FromCity = "Dubai (DXB)",
-                ToCity = "Dushanbe (DYU)",
+                FromCity = "Дубай (DXB)",
+                ToCity = "Душанбе (DYU)",
                 DepartureTime = new DateTime(2026, 05, 18, 22, 00, 0),
                 ArrivalTime = new DateTime(2026, 05, 19, 02, 30, 0),
                 FromLatitude = 25.2532m,
@@ -86,15 +86,15 @@ namespace AgencyWebApp.Infrastructure.Data.Configurations
                 ToLatitude = 38.5433m,
                 ToLongitude = 68.8249m,
                 Price = 380.00m,
-                Status = "Scheduled"
+                Status = "Запланирован"
             },
             new Flight
             {
                 Id = 5,
                 AirPlaneName = "Airbus A321",
                 FlightNumber = 505,
-                FromCity = "Tashkent (TAS)",
-                ToCity = "Dushanbe (DYU)",
+                FromCity = "Ташкент (TAS)",
+                ToCity = "Душанбе (DYU)",
                 DepartureTime = new DateTime(2026, 05, 20, 14, 00, 0),
                 ArrivalTime = new DateTime(2026, 05, 20, 15, 00, 0),
                 FromLatitude = 41.2575m,
@@ -102,15 +102,15 @@ namespace AgencyWebApp.Infrastructure.Data.Configurations
                 ToLatitude = 38.5433m,
                 ToLongitude = 68.8249m,
                 Price = 110.00m,
-                Status = "Active"
+                Status = "Активный"
             },
             new Flight
             {
                 Id = 6,
                 AirPlaneName = "Boeing 737-800",
                 FlightNumber = 606,
-                FromCity = "Almaty (ALA)",
-                ToCity = "Dushanbe (DYU)",
+                FromCity = "Алматы (ALA)",
+                ToCity = "Душанбе (DYU)",
                 DepartureTime = new DateTime(2026, 05, 22, 10, 00, 0),
                 ArrivalTime = new DateTime(2026, 05, 22, 11, 45, 0),
                 FromLatitude = 43.3520m,
@@ -118,15 +118,15 @@ namespace AgencyWebApp.Infrastructure.Data.Configurations
                 ToLatitude = 38.5433m,
                 ToLongitude = 68.8249m,
                 Price = 140.00m,
-                Status = "Scheduled"
+                Status = "Запланирован"
             },
             new Flight
             {
                 Id = 7,
                 AirPlaneName = "Boeing 787 Dreamliner",
                 FlightNumber = 707,
-                FromCity = "Frankfurt (FRA)",
-                ToCity = "Dushanbe (DYU)",
+                FromCity = "Франкфурт (FRA)",
+                ToCity = "Душанбе (DYU)",
                 DepartureTime = new DateTime(2026, 05, 25, 20, 00, 0),
                 ArrivalTime = new DateTime(2026, 05, 26, 06, 00, 0),
                 FromLatitude = 50.0333m,
@@ -134,15 +134,15 @@ namespace AgencyWebApp.Infrastructure.Data.Configurations
                 ToLatitude = 38.5433m,
                 ToLongitude = 68.8249m,
                 Price = 650.00m,
-                Status = "Delayed"
+                Status = "Задержан"
             },
             new Flight
             {
                 Id = 8,
                 AirPlaneName = "Airbus A320",
                 FlightNumber = 808,
-                FromCity = "Delhi (DEL)",
-                ToCity = "Dushanbe (DYU)",
+                FromCity = "Дели (DEL)",
+                ToCity = "Душанбе (DYU)",
                 DepartureTime = new DateTime(2026, 05, 28, 04, 00, 0),
                 ArrivalTime = new DateTime(2026, 05, 28, 07, 30, 0),
                 FromLatitude = 28.5562m,
@@ -150,15 +150,15 @@ namespace AgencyWebApp.Infrastructure.Data.Configurations
                 ToLatitude = 38.5433m,
                 ToLongitude = 68.8249m,
                 Price = 290.00m,
-                Status = "Scheduled"
+                Status = "Запланирован"
             },
             new Flight
             {
                 Id = 9,
                 AirPlaneName = "Boeing 737-800",
                 FlightNumber = 909,
-                FromCity = "Munich (MUC)",
-                ToCity = "Dushanbe (DYU)",
+                FromCity = "Мюнхен (MUC)",
+                ToCity = "Душанбе (DYU)",
                 DepartureTime = new DateTime(2026, 06, 01, 11, 00, 0),
                 ArrivalTime = new DateTime(2026, 06, 01, 20, 00, 0),
                 FromLatitude = 48.3537m,
@@ -166,15 +166,15 @@ namespace AgencyWebApp.Infrastructure.Data.Configurations
                 ToLatitude = 38.5433m,
                 ToLongitude = 68.8249m,
                 Price = 580.00m,
-                Status = "Active"
+                Status = "Активный"
             },
             new Flight
             {
                 Id = 10,
                 AirPlaneName = "Embraer 190",
                 FlightNumber = 110,
-                FromCity = "Urumqi (URC)",
-                ToCity = "Dushanbe (DYU)",
+                FromCity = "Урумчи (URC)",
+                ToCity = "Душанбе (DYU)",
                 DepartureTime = new DateTime(2026, 06, 03, 15, 00, 0),
                 ArrivalTime = new DateTime(2026, 06, 03, 17, 30, 0),
                 FromLatitude = 43.9071m,
@@ -182,7 +182,7 @@ namespace AgencyWebApp.Infrastructure.Data.Configurations
                 ToLatitude = 38.5433m,
                 ToLongitude = 68.8249m,
                 Price = 420.00m,
-                Status = "Scheduled"
+                Status = "Запланирован"
             }
         );
         }

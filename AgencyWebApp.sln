@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgencyWebApp.Domain", "Agen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgencyWebApp.Application", "AgencyWebApp.Application\AgencyWebApp.Application.csproj", "{9DA99449-0218-487A-BEDB-8166DB516995}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgencyWebApp.Infrastructure", "AgencyWebApp.InfraStructure\AgencyWebApp.Infrastructure.csproj", "{B8E4F2A3-D6D6-4BA0-902A-1DE1E3B7F5D1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgencyWebApp.Infrastructure", "AgencyWebApp.Infrastructure\AgencyWebApp.Infrastructure.csproj", "{B8E4F2A3-D6D6-4BA0-902A-1DE1E3B7F5D1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgencyWebApp.Presentation", "AgencyWebApp.Presentation\AgencyWebApp.Presentation.csproj", "{B64852AF-776E-8AEC-6B7A-289D776EFE2E}"
 EndProject
