@@ -29,10 +29,11 @@ namespace AgencyWebApp.Application.Auth
 
         public async Task<UserDto> RegisterAsync(RegisterDto dto)
         {
-            var existingUsers = await _userRepo.GetAllAsync();
-            if (existingUsers.Any(u => u.Email == dto.Email))
+            var userExists = await _userRepo.GetByEmailAsync(dto.Email);
+            if (userExists != null)
+            {
                 throw new Exception("User with this email already exists");
-
+            }
             var user = new User
             {
                 FullName = dto.FullName,
@@ -47,8 +48,7 @@ namespace AgencyWebApp.Application.Auth
 
         public async Task<string> LoginAsync(LoginDto dto)
         {
-            var users = await _userRepo.GetAllAsync();
-            var user = users.FirstOrDefault(u => u.Email == dto.Email);
+            var user = await _userRepo.GetByEmailAsync(dto.Email);
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
                 throw new Exception("Invalid credentials");
 

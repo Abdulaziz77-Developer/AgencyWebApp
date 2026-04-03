@@ -24,7 +24,7 @@ namespace AgencyWebApp.Infrastructure.Repositories.Implementations
 
         public virtual async Task<TEntity> CreateAsync(TEntity entity)
         {
-            _dbSet.Add(entity);
+            await _dbSet.AddAsync(entity);
             await _context.SaveChangesAsync();
             return entity;
         }
