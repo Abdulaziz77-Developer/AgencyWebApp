@@ -93,7 +93,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 

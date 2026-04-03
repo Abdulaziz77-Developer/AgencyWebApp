@@ -1,34 +1,61 @@
-﻿using AgencyWebApp.Application.DTOs.MapDTOs;
+﻿using AgencyWebApp.Application.Common;
+using AgencyWebApp.Application.DTOs.MapDTOs;
 using AgencyWebApp.Application.DTOs.TourDTOs;
 using AgencyWebApp.Application.Services.Interfaces;
 using AgencyWebApp.Domain.Models;
 using AgencyWebApp.Domain.Repositories.Interfaces;
 using AutoMapper;
+using Microsoft.Extensions.Caching.Memory;
 
 
 namespace AgencyWebApp.Application.Services.Implementations
 {
     public class TourService : ITourService
     {
+        private readonly IMemoryCache _cache;
         private readonly ITourRepository _tourRepo;
         private readonly IMapper _mapper;
+    
 
-        public TourService(ITourRepository tourRepo, IMapper mapper)
+        public TourService(ITourRepository tourRepo, IMapper mapper, IMemoryCache cache )
         {
             _tourRepo = tourRepo;
             _mapper = mapper;
+            _cache = cache;
+            
         }
 
         public async Task<TourDto?> GetByIdAsync(int id)
         {
+            
             var tour = await _tourRepo.GetByIdAsync(id);
             return tour == null ? null : _mapper.Map<TourDto>(tour);
         }
 
         public async Task<List<TourDto>> GetAllAsync()
         {
-            var tours = await _tourRepo.GetAllAsync();
-            return _mapper.Map<List<TourDto>>(tours);
+            // 1. Пытаемся получить данные из оперативной памяти
+            if (!_cache.TryGetValue(CacheKeys.TOURS, out List<TourDto>? cachedTours))
+            {
+                // 2. Если в кэше ПУСТО (Cache Miss), идем в базу данных
+                var tours = await _tourRepo.GetAllAsync();
+
+                // Маппим сущности в DTO
+                cachedTours = _mapper.Map<List<TourDto>>(tours);
+
+                // 3. Настраиваем политику кэширования
+                var cacheOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromHours(1)) // Данные "протухнут" через 1 час
+                .SetSlidingExpiration(TimeSpan.FromMinutes(2))  // Если никто не заходит 2 минуты — кэш удалится раньше
+                .SetPriority(CacheItemPriority.High);           // Защищаем от случайного удаления при нехватке RAM
+                Console.WriteLine("Cache Miss: Loaded tours from database and stored in cache.");
+                // 4. Сохраняем результат в кэш
+                _cache.Set(CacheKeys.TOURS, cachedTours, cacheOptions);
+            }
+
+            // 5. Возвращаем либо данные из кэша, либо свежезагруженные
+            Console.WriteLine("Cache Hit: Returned tours from cache.");
+            return cachedTours!;
         }
 
         public async Task<TourDto> CreateAsync(CreateTourDto dto)

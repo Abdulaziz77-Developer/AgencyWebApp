@@ -13,8 +13,6 @@ namespace AgencyWebApp.Infrastructure.Repositories.Implementations
         {
             return await _context.Tours.Include(t => t.TourPoints).ToListAsync();
         }
-
-        
     }
 
 }

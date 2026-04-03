@@ -1,9 +1,11 @@
-﻿using AgencyWebApp.Application.DTOs.HotelDTOs;
+﻿using AgencyWebApp.Application.Common;
+using AgencyWebApp.Application.DTOs.HotelDTOs;
 using AgencyWebApp.Application.DTOs.MapDTOs;
 using AgencyWebApp.Application.Services.Interfaces;
 using AgencyWebApp.Domain.Models;
 using AgencyWebApp.Domain.Repositories.Interfaces;
 using AutoMapper;
+using Microsoft.Extensions.Caching.Memory;
 
 
 namespace AgencyWebApp.Application.Services.Implementations
@@ -12,11 +14,13 @@ namespace AgencyWebApp.Application.Services.Implementations
     {
         private readonly IHotelRepository _hotelRepo;
         private readonly IMapper _mapper;
+        private readonly IMemoryCache _cache;
 
-        public HotelService(IHotelRepository hotelRepo, IMapper mapper)
+        public HotelService(IHotelRepository hotelRepo, IMapper mapper, IMemoryCache cache)
         {
             _hotelRepo = hotelRepo;
             _mapper = mapper;
+            _cache = cache;
         }
 
         public async Task<HotelDto?> GetByIdAsync(int id)
@@ -27,8 +31,23 @@ namespace AgencyWebApp.Application.Services.Implementations
 
         public async Task<List<HotelDto>> GetAllAsync()
         {
-            var hotels = await _hotelRepo.GetAllAsync();
-            return _mapper.Map<List<HotelDto>>(hotels);
+            if (!_cache.TryGetValue(CacheKeys.HOTELS, out List<HotelDto>? cachedHotels))
+            {
+                var hotels = await _hotelRepo.GetAllAsync();
+
+                cachedHotels = _mapper.Map<List<HotelDto>>(hotels);
+
+                var cacheOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromHours(1)) // Данные "протухнут" через 1 час
+                .SetSlidingExpiration(TimeSpan.FromMinutes(2))  // Если никто не заходит 2 минуты — кэш удалится раньше
+                .SetPriority(CacheItemPriority.High);           // Защищаем от случайного удаления при нехватке RAM
+                Console.WriteLine("Cache Miss: Loaded hotels from database and stored in cache.");
+                _cache.Set(CacheKeys.HOTELS, cachedHotels, cacheOptions);
+            }
+
+            Console.WriteLine("Cache Hit: Returned hotels from cache.");
+            return cachedHotels!;
+
         }
 
         public async Task<HotelDto> CreateAsync(CreateHotelDto dto)

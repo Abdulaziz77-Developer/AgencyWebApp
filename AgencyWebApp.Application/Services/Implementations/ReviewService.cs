@@ -1,8 +1,10 @@
-﻿using AgencyWebApp.Application.DTOs.ReviewDTOs;
+﻿using AgencyWebApp.Application.Common;
+using AgencyWebApp.Application.DTOs.ReviewDTOs;
 using AgencyWebApp.Application.Services.Interfaces;
 using AgencyWebApp.Domain.Models;
 using AgencyWebApp.Domain.Repositories.Interfaces;
 using AutoMapper;
+using Microsoft.Extensions.Caching.Memory;
 
 
 namespace AgencyWebApp.Application.Services.Implementations
@@ -11,11 +13,14 @@ namespace AgencyWebApp.Application.Services.Implementations
     {
         private readonly IReviewRepository _reviewRepo;
         private readonly IMapper _mapper;
+        private readonly IMemoryCache _cache;
 
-        public ReviewService(IReviewRepository reviewRepo, IMapper mapper)
+        public ReviewService(IReviewRepository reviewRepo, IMapper mapper, IMemoryCache cache)
         {
             _reviewRepo = reviewRepo;
             _mapper = mapper;
+            _cache = cache;
+
         }
 
         public async Task<ReviewDto?> GetByIdAsync(int id)
@@ -26,8 +31,28 @@ namespace AgencyWebApp.Application.Services.Implementations
 
         public async Task<List<ReviewDto>> GetAllAsync()
         {
-            var reviews = await _reviewRepo.GetAllAsync();
-            return _mapper.Map<List<ReviewDto>>(reviews);
+            if (!_cache.TryGetValue(CacheKeys.REVIEWS, out List<ReviewDto>? cachedReviews))
+            {
+                // 2. Если в кэше ПУСТО (Cache Miss), идем в базу данных
+                var reviews = await _reviewRepo.GetAllAsync();
+
+                // Маппим сущности в DTO
+                cachedReviews = _mapper.Map<List<ReviewDto>>(reviews);
+
+                // 3. Настраиваем политику кэширования
+                var cacheOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromHours(1)) // Данные "протухнут" через 1 час
+                .SetSlidingExpiration(TimeSpan.FromMinutes(2))  // Если никто не заходит 2 минуты — кэш удалится раньше
+                .SetPriority(CacheItemPriority.High);           // Защищаем от случайного удаления при нехватке RAM
+                Console.WriteLine("Cache Miss: Loaded reviews from database and stored in cache.");
+                // 4. Сохраняем результат в кэш
+                _cache.Set(CacheKeys.REVIEWS, cachedReviews, cacheOptions);
+            }
+
+            // 5. Возвращаем либо данные из кэша, либо свежезагруженные
+            Console.WriteLine("Cache Hit: Returned reviews from cache.");
+            return cachedReviews!;
+            
         }
 
         public async Task<ReviewDto> CreateAsync(CreateReviewDto dto)

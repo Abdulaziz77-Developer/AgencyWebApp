@@ -1,9 +1,11 @@
-﻿using AgencyWebApp.Application.DTOs.FlightDto;
+﻿using AgencyWebApp.Application.Common;
+using AgencyWebApp.Application.DTOs.FlightDto;
 using AgencyWebApp.Application.DTOs.MapDTOs;
 using AgencyWebApp.Application.Services.Interfaces;
 using AgencyWebApp.Domain.Models;
 using AgencyWebApp.Domain.Repositories.Interfaces;
 using AutoMapper;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace AgencyWebApp.Application.Services.Implementations
 {
@@ -11,11 +13,13 @@ namespace AgencyWebApp.Application.Services.Implementations
     {
         private readonly IFlightRepository _flightRepo;
         private readonly IMapper _mapper;
+        private readonly IMemoryCache _cache;
 
-        public FlightService(IFlightRepository flightRepo, IMapper mapper)
+        public FlightService(IFlightRepository flightRepo, IMapper mapper, IMemoryCache cache)
         {
             _flightRepo = flightRepo;
             _mapper = mapper;
+            _cache = cache;
         }
 
         public async Task<FlightDto?> GetByIdAsync(int id)
@@ -26,8 +30,22 @@ namespace AgencyWebApp.Application.Services.Implementations
 
         public async Task<List<FlightDto>> GetAllAsync()
         {
-            var flights = await _flightRepo.GetAllAsync();
-            return _mapper.Map<List<FlightDto>>(flights);
+            if(!_cache.TryGetValue(CacheKeys.FLIGHTS, out List<FlightDto>? cachedFlights))
+            {
+                var flights = await _flightRepo.GetAllAsync();
+
+                cachedFlights = _mapper.Map<List<FlightDto>>(flights);
+
+                var cacheOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromHours(1)) // Данные "протухнут" через 1 час
+                .SetSlidingExpiration(TimeSpan.FromMinutes(2))  // Если никто не заходит 2 минуты — кэш удалится раньше
+                .SetPriority(CacheItemPriority.High);           // Защищаем от случайного удаления при нехватке RAM
+                Console.WriteLine("Cache Miss: Loaded flights from database and stored in cache.");
+                _cache.Set(CacheKeys.FLIGHTS, cachedFlights, cacheOptions);
+            }
+
+            Console.WriteLine("Cache Hit: Returned flights from cache.");
+            return cachedFlights!;  
         }
 
         public async Task<FlightDto> CreateAsync(CreateFlightDto dto)
