@@ -1,8 +1,10 @@
 using AgencyWebApp.API.Extensions;
+using AgencyWebApp.Application;
 using AgencyWebApp.Application.Profiles;
 using AgencyWebApp.Application.Services.Interfaces;
 using AgencyWebApp.Infrastructure.Data;
 using AgencyWebApp.Infrastructure.Services;
+using AgencyWebApp.Web.Middleware;
 using Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +39,7 @@ builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 builder.Services.AddRepositories();
 builder.Services.AddServices();
 builder.Services.AddAuth();
+builder.Services.AddApplication();
 builder.Services.AddScoped<IEmailService, GmailService>();
 var jwtSecret = builder.Configuration["Jwt:Secret"]
     ?? throw new Exception("Jwt:Secret is missing in appsettings.json");
@@ -97,6 +100,7 @@ builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionMiddleware>();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
