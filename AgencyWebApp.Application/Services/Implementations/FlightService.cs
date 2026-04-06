@@ -2,9 +2,11 @@
 using AgencyWebApp.Application.DTOs.FlightDto;
 using AgencyWebApp.Application.DTOs.MapDTOs;
 using AgencyWebApp.Application.Services.Interfaces;
+using AgencyWebApp.Application.Validators.FlightValidators;
 using AgencyWebApp.Domain.Models;
 using AgencyWebApp.Domain.Repositories.Interfaces;
 using AutoMapper;
+using FluentValidation;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace AgencyWebApp.Application.Services.Implementations
@@ -14,13 +16,18 @@ namespace AgencyWebApp.Application.Services.Implementations
         private readonly IFlightRepository _flightRepo;
         private readonly IMapper _mapper;
         private readonly IMemoryCache _cache;
-        private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1); // Семафор для синхронизации доступа к кэшу
+        private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1); 
+        private readonly IValidator<CreateFlightDto> _createValidator;
+        private readonly IValidator<UpdateFlightDto> _updateValidator;
 
-        public FlightService(IFlightRepository flightRepo, IMapper mapper, IMemoryCache cache)
+        public FlightService(IFlightRepository flightRepo, IMapper mapper, IMemoryCache cache, IValidator<UpdateFlightDto> updateValidator, IValidator<CreateFlightDto> createValidator)
+
         {
             _flightRepo = flightRepo;
             _mapper = mapper;
             _cache = cache;
+            _updateValidator = updateValidator;
+            _createValidator = createValidator;
         }
 
         public async Task<FlightDto?> GetByIdAsync(int id)
@@ -70,29 +77,48 @@ namespace AgencyWebApp.Application.Services.Implementations
 
         public async Task<FlightDto> CreateAsync(CreateFlightDto dto)
         {
+            
+            var validationResult = await _createValidator.ValidateAsync(dto);
+
+         
+            if (!validationResult.IsValid)
+            {
+                var errorMessage = validationResult.Errors.First().ErrorMessage;
+                throw new Exception(errorMessage);
+            }
+                        
             var flight = _mapper.Map<Flight>(dto);
+                       
             var created = await _flightRepo.CreateAsync(flight);
+
             return _mapper.Map<FlightDto>(created);
         }
 
         public async Task<FlightDto?> UpdateAsync(int id, UpdateFlightDto dto)
         {
+            // 1. Валидация входящих данных (проверяем координаты и логику дат)
+            var validationResult = await _updateValidator.ValidateAsync(dto);
+
+            if (!validationResult.IsValid)
+            {
+                // Выбрасываем первую ошибку из списка
+                var errorMessage = validationResult.Errors.First().ErrorMessage;
+                throw new Exception(errorMessage);
+            }
+
+            // 2. Поиск существующего рейса
             var flight = await _flightRepo.GetByIdAsync(id);
             if (flight == null)
                 throw new Exception("Flight not found");
 
-            if (!string.IsNullOrWhiteSpace(dto.AirPlaneName)) flight.AirPlaneName = dto.AirPlaneName;
-            if (!string.IsNullOrWhiteSpace(dto.FromCity)) flight.FromCity = dto.FromCity;
-            if (!string.IsNullOrWhiteSpace(dto.ToCity)) flight.ToCity = dto.ToCity;
+            // 3. Умный маппинг через AutoMapper
+            // Он автоматически обновит только те поля, которые не null в UpdateFlightDto
+            _mapper.Map(dto, flight);
 
-            if (dto.FlightNumber.HasValue) flight.FlightNumber = dto.FlightNumber.Value;
-            if (dto.DepartureTime.HasValue) flight.DepartureTime = dto.DepartureTime.Value;
-            if (dto.ArrivalTime.HasValue) flight.ArrivalTime = dto.ArrivalTime.Value;
-            if (dto.FromLatitude.HasValue) flight.FromLatitude = dto.FromLatitude.Value;
-            if (dto.FromLongitude.HasValue) flight.FromLongitude = dto.FromLongitude.Value;
-            if (dto.ToLatitude.HasValue) flight.ToLatitude = dto.ToLatitude.Value;
-            if (dto.ToLongitude.HasValue) flight.ToLongitude = dto.ToLongitude.Value;
+            // 4. Сохранение изменений в БД
             await _flightRepo.SaveChangesAsync();
+
+            // 5. Возвращаем результат
             return _mapper.Map<FlightDto>(flight);
         }
 

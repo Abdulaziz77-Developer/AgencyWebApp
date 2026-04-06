@@ -5,6 +5,7 @@ using AgencyWebApp.Application.Services.Interfaces;
 using AgencyWebApp.Domain.Models;
 using AgencyWebApp.Domain.Repositories.Interfaces;
 using AutoMapper;
+using FluentValidation;
 using Microsoft.Extensions.Caching.Memory;
 
 
@@ -15,15 +16,19 @@ namespace AgencyWebApp.Application.Services.Implementations
         private readonly IMemoryCache _cache;
         private readonly ITourRepository _tourRepo;
         private readonly IMapper _mapper;
-        private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1); // Семафор для синхронизации доступа к кэшу
-    
+        private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
+        private readonly IValidator<CreateTourDto> _createValidator;
+        private readonly IValidator<UpdateTourDto> _updateValidator;
 
-        public TourService(ITourRepository tourRepo, IMapper mapper, IMemoryCache cache )
+
+        public TourService(ITourRepository tourRepo, IMapper mapper, IMemoryCache cache, IValidator<UpdateTourDto> updateValidator, IValidator<CreateTourDto> createValidator)
         {
             _tourRepo = tourRepo;
             _mapper = mapper;
             _cache = cache;
-            
+            _updateValidator = updateValidator;
+            _createValidator = createValidator;
+
         }
 
         public async Task<TourDto?> GetByIdAsync(int id)
@@ -70,38 +75,59 @@ namespace AgencyWebApp.Application.Services.Implementations
             {
                 Console.WriteLine("Cache Hit: Returned tours from cache.");
             }
-
-            // 5. Возвращаем либо данные из кэша, либо свежезагруженные
             
             return cachedTours!;
         }
 
         public async Task<TourDto> CreateAsync(CreateTourDto dto)
         {
+            // 1. Validate the incoming tour data
+            var validationResult = await _createValidator.ValidateAsync(dto);
+
+            if (!validationResult.IsValid)
+            {
+                // Extract the error message from the CreateTourDtoValidator
+                var errorMessage = validationResult.Errors.First().ErrorMessage;
+                throw new Exception(errorMessage);
+            }
+
+            // 2. Map the DTO to the Tour domain model
             var tour = _mapper.Map<Tour>(dto);
+
+            // 3. Save the new tour to the database via repository
             var created = await _tourRepo.CreateAsync(tour);
+
+            // 4. Return the result mapped back to a TourDto
             return _mapper.Map<TourDto>(created);
         }
 
         public async Task<TourDto?> UpdateAsync(int id, UpdateTourDto dto)
         {
+            // Validate the incoming update request
+            var validationResult = await _updateValidator.ValidateAsync(dto);
 
+            if (!validationResult.IsValid)
+            {
+                // Extract the error message defined in UpdateTourDtoValidator
+                var errorMessage = validationResult.Errors.First().ErrorMessage;
+                throw new Exception(errorMessage);
+            }
+
+            // Retrieve existing tour from the database
             var tour = await _tourRepo.GetByIdAsync(id);
             if (tour == null)
                 throw new Exception("Tour not found");
 
-            if (!string.IsNullOrWhiteSpace(dto.Title)) tour.Title = dto.Title;
-            if (!string.IsNullOrWhiteSpace(dto.Description)) tour.Description = dto.Description;
-            if (dto.Price.HasValue) tour.Price = dto.Price.Value;
-            if (!string.IsNullOrWhiteSpace(dto.Region)) tour.Region = dto.Region;
-            if (!string.IsNullOrWhiteSpace(dto.PhotoUrl)) tour.PhotoUrl = dto.PhotoUrl;
-            if (dto.StartLatitude.HasValue) tour.StartLatitude = dto.StartLatitude.Value;
-            if (dto.StartLongitude.HasValue) tour.StartLongitude = dto.StartLongitude.Value;
-            tour.Status = dto.Status;
+            // Apply updates from DTO to the existing entity using AutoMapper
+            // This replaces all manual "if (dto.Field.HasValue)" checks
+            _mapper.Map(dto, tour);
+
+            // Save changes to the database
             await _tourRepo.SaveChangesAsync();
+
+            // Return the updated result as a DTO
             return _mapper.Map<TourDto>(tour);
         }
-
         public async Task<bool> DeleteAsync(int id)
         {
             return await _tourRepo.DeleteAsync(id);

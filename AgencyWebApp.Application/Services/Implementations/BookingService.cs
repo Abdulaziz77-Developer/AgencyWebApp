@@ -1,10 +1,11 @@
-﻿using AgencyWebApp.Application.Services.Interfaces;
+﻿using AgencyWebApp.Application.Common;
 using AgencyWebApp.Application.DTOs.BookingDTOs;
+using AgencyWebApp.Application.Services.Interfaces;
+using AgencyWebApp.Domain.Models;
 using AgencyWebApp.Domain.Repositories.Interfaces;
 using AutoMapper;
-using AgencyWebApp.Domain.Models;
+using FluentValidation;
 using Microsoft.Extensions.Caching.Memory;
-using AgencyWebApp.Application.Common;
 
 
 namespace AgencyWebApp.Application.Services.Implementations
@@ -14,13 +15,18 @@ namespace AgencyWebApp.Application.Services.Implementations
         private readonly IBookingRepository _bookingRepo;
         private readonly IMapper _mapper;
         private readonly IMemoryCache _cache;
-        private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1); // Семафор для синхронизации доступа к кэшу
+        private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
+        private readonly IValidator<CreateBookingDto> _createValidator;
+        private readonly IValidator<UpdateBookingDto> _updateValidator;
 
-        public BookingService(IBookingRepository bookingRepo, IMapper mapper, IMemoryCache cache)
+        public BookingService(IBookingRepository bookingRepo, IMapper mapper, IMemoryCache cache,  IValidator<CreateBookingDto> createValidator,
+         IValidator<UpdateBookingDto> updateValidator)
         {
             _bookingRepo = bookingRepo;
             _mapper = mapper;
             _cache = cache;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
         }
 
         public async Task<BookingDto?> GetByIdAsync(int id)
@@ -68,33 +74,40 @@ namespace AgencyWebApp.Application.Services.Implementations
 
         public async Task<BookingDto> CreateAsync(CreateBookingDto dto)
         {
+            var validationResult = await _createValidator.ValidateAsync(dto);
+
+            if (!validationResult.IsValid)
+            {
+                var errorMessage = validationResult.Errors.First().ErrorMessage;
+                throw new Exception(errorMessage);
+            }
+
             var booking = _mapper.Map<Booking>(dto);
+
             var created = await _bookingRepo.CreateAsync(booking);
+
             return _mapper.Map<BookingDto>(created);
         }
 
         public async Task<BookingDto?> UpdateAsync(int id, UpdateBookingDto dto)
         {
+            var validationResult = await _updateValidator.ValidateAsync(dto);
+
+            if (!validationResult.IsValid)
+            {
+                throw new Exception(validationResult.Errors.First().ErrorMessage);
+            }
+
             var booking = await _bookingRepo.GetByIdAsync(id);
             if (booking == null)
                 throw new Exception("Booking not found");
 
-            if (dto.TourId.HasValue)
-                booking.TourId = dto.TourId.Value;
+            _mapper.Map(dto, booking);
 
-            if (dto.HotelId.HasValue)
-                booking.HotelId = dto.HotelId.Value;
-
-            if (dto.FlightId.HasValue)
-                booking.FlightId = dto.FlightId.Value;
-            if(dto.Status)
-            {
-                booking.Status = dto.Status;
-            }
             await _bookingRepo.SaveChangesAsync();
+
             return _mapper.Map<BookingDto>(booking);
         }
-
         public async Task<bool> DeleteAsync(int id)
         {
             return await _bookingRepo.DeleteAsync(id);
