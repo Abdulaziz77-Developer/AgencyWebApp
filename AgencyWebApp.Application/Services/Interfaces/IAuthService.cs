@@ -1,7 +1,7 @@
 ﻿using AgencyWebApp.Application.DTOs.AuthDTOs;
 using AgencyWebApp.Application.DTOs.UserDTOs;
 
-namespace AgencyWebApp.Application.Auth.Interfaces
+namespace AgencyWebApp.Application.Services.Interfaces
 {
     public interface IAuthService
     {

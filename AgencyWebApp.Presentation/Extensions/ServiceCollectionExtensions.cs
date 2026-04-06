@@ -1,6 +1,4 @@
-﻿using AgencyWebApp.Application.Auth;
-using AgencyWebApp.Application.Auth.Interfaces;
-using AgencyWebApp.Application.Services.Implementations;
+﻿using AgencyWebApp.Application.Services.Implementations;
 using AgencyWebApp.Application.Services.Interfaces;
 using AgencyWebApp.Domain.Repositories.Interfaces;
 using AgencyWebApp.Infrastructure.Repositories.Implementations;

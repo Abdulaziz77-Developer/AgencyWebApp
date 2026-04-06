@@ -1,4 +1,4 @@
-﻿using AgencyWebApp.Application.Auth.Interfaces;
+﻿using AgencyWebApp.Application.Services.Interfaces;
 using AgencyWebApp.Application.DTOs.AuthDTOs;
 using AgencyWebApp.Application.DTOs.UserDTOs;
 using AgencyWebApp.Domain.Enums;
@@ -11,7 +11,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace AgencyWebApp.Application.Auth
+namespace AgencyWebApp.Application.Services.Implementations
 {
 
     public class AuthService : IAuthService

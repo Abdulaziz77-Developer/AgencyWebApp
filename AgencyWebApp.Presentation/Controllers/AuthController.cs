@@ -1,5 +1,5 @@
-﻿using AgencyWebApp.Application.Auth.Interfaces;
-using AgencyWebApp.Application.DTOs.AuthDTOs;
+﻿using AgencyWebApp.Application.DTOs.AuthDTOs;
+using AgencyWebApp.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
