@@ -15,6 +15,7 @@ namespace AgencyWebApp.Application.Services.Implementations
         private readonly IHotelRepository _hotelRepo;
         private readonly IMapper _mapper;
         private readonly IMemoryCache _cache;
+        private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1); // Семафор для синхронизации доступа к кэшу
 
         public HotelService(IHotelRepository hotelRepo, IMapper mapper, IMemoryCache cache)
         {
@@ -31,23 +32,43 @@ namespace AgencyWebApp.Application.Services.Implementations
 
         public async Task<List<HotelDto>> GetAllAsync()
         {
+            // Шаг 1: Быстрая проверка кэша (без блокировки)
+
             if (!_cache.TryGetValue(CacheKeys.HOTELS, out List<HotelDto>? cachedHotels))
             {
-                var hotels = await _hotelRepo.GetAllAsync();
-
-                cachedHotels = _mapper.Map<List<HotelDto>>(hotels);
-
-                var cacheOptions = new MemoryCacheEntryOptions()
-                .SetAbsoluteExpiration(TimeSpan.FromHours(1)) // Данные "протухнут" через 1 час
-                .SetSlidingExpiration(TimeSpan.FromMinutes(2))  // Если никто не заходит 2 минуты — кэш удалится раньше
-                .SetPriority(CacheItemPriority.High);           // Защищаем от случайного удаления при нехватке RAM
-                Console.WriteLine("Cache Miss: Loaded hotels from database and stored in cache.");
-                _cache.Set(CacheKeys.HOTELS, cachedHotels, cacheOptions);
+                // Шаг 2: Если кэша нет, ждем своей очереди у "турникета"
+                await semaphore.WaitAsync();
+                try
+                {
+                    // Шаг 3: Двойная проверка (Double-Check Locking)
+                    // Пока мы ждали в очереди, первый поток мог уже записать данные в кэш!
+                    if (!_cache.TryGetValue(CacheKeys.HOTELS, out cachedHotels))
+                    {
+                        Console.WriteLine("Cache Miss: Первый поток пошел в базу за данными...");
+                        var hotels = await _hotelRepo.GetAllAsync();
+                        cachedHotels = _mapper.Map<List<HotelDto>>(hotels);
+                        var cacheOptions = new MemoryCacheEntryOptions()
+                       .SetAbsoluteExpiration(TimeSpan.FromHours(1)) // Данные "протухнут" через 1 час
+                       .SetSlidingExpiration(TimeSpan.FromMinutes(2))  // Если никто не заходит 2 минуты — кэш удалится раньше
+                       .SetPriority(CacheItemPriority.High);           // Защищаем от случайного удаления при нехватке RAM
+                        Console.WriteLine("Cache Miss: Loaded hotels from database and stored in cache.");
+                        _cache.Set(CacheKeys.HOTELS, cachedHotels, cacheOptions);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Cache Hit: Данные взяты из кэша мгновенно.");
+                    }
+                }
+                finally
+                {
+                    semaphore.Release();
+                }
+            }   
+            else
+            {
+                Console.WriteLine("Cache Hit: Returned hotels from cache.");
             }
-
-            Console.WriteLine("Cache Hit: Returned hotels from cache.");
             return cachedHotels!;
-
         }
 
         public async Task<HotelDto> CreateAsync(CreateHotelDto dto)

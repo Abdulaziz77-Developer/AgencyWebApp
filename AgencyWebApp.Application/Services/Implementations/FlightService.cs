@@ -14,6 +14,7 @@ namespace AgencyWebApp.Application.Services.Implementations
         private readonly IFlightRepository _flightRepo;
         private readonly IMapper _mapper;
         private readonly IMemoryCache _cache;
+        private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1); // Семафор для синхронизации доступа к кэшу
 
         public FlightService(IFlightRepository flightRepo, IMapper mapper, IMemoryCache cache)
         {
@@ -30,18 +31,37 @@ namespace AgencyWebApp.Application.Services.Implementations
 
         public async Task<List<FlightDto>> GetAllAsync()
         {
-            if(!_cache.TryGetValue(CacheKeys.FLIGHTS, out List<FlightDto>? cachedFlights))
+            if (!_cache.TryGetValue(CacheKeys.FLIGHTS, out List<FlightDto>? cachedFlights))
             {
-                var flights = await _flightRepo.GetAllAsync();
+                await semaphore.WaitAsync();
+                try
+                {
+                    if (!_cache.TryGetValue(CacheKeys.FLIGHTS, out cachedFlights))
+                    {
+                        Console.WriteLine("Cache Miss: Первый поток пошел в базу за данными...");
+                        var flights = await _flightRepo.GetAllAsync();
+                        cachedFlights = _mapper.Map<List<FlightDto>>(flights);
+                        var cacheOptions = new MemoryCacheEntryOptions()
+                        .SetAbsoluteExpiration(TimeSpan.FromHours(1)) // Данные "протухнут" через 1 час
+                        .SetSlidingExpiration(TimeSpan.FromMinutes(2))  // Если никто не заходит 2 минуты — кэш удалится раньше
+                        .SetPriority(CacheItemPriority.High);           // Защищаем от случайного удаления при нехватке RAM
+                        Console.WriteLine("Cache Miss: Loaded flights from database and stored in cache.");
+                        _cache.Set(CacheKeys.FLIGHTS, cachedFlights, cacheOptions);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Cache Hit: Данные взяты из кэша мгновенно.");
+                    }
+                }
+                finally
+                {
+                    semaphore.Release();
 
-                cachedFlights = _mapper.Map<List<FlightDto>>(flights);
-
-                var cacheOptions = new MemoryCacheEntryOptions()
-                .SetAbsoluteExpiration(TimeSpan.FromHours(1)) // Данные "протухнут" через 1 час
-                .SetSlidingExpiration(TimeSpan.FromMinutes(2))  // Если никто не заходит 2 минуты — кэш удалится раньше
-                .SetPriority(CacheItemPriority.High);           // Защищаем от случайного удаления при нехватке RAM
-                Console.WriteLine("Cache Miss: Loaded flights from database and stored in cache.");
-                _cache.Set(CacheKeys.FLIGHTS, cachedFlights, cacheOptions);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Cache Hit: Данные взяты из кэша мгновенно.");
             }
 
             Console.WriteLine("Cache Hit: Returned flights from cache.");

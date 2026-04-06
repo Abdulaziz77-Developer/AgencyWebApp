@@ -33,6 +33,11 @@ namespace AgencyWebApp.Application.Services.Implementations
         public async Task<UserDto> CreateAsync(CreateUserDto dto)
         {
             var user = _mapper.Map<User>(dto);
+            var _user = await _userRepo.GetByEmailAsync(dto.Email);
+            if (_user != null)
+            {
+                throw new Exception("User with this email already exists");
+            }  
             var created = await _userRepo.CreateAsync(user);
             return _mapper.Map<UserDto>(created);
         }

@@ -14,6 +14,7 @@ namespace AgencyWebApp.Application.Services.Implementations
         private readonly IReviewRepository _reviewRepo;
         private readonly IMapper _mapper;
         private readonly IMemoryCache _cache;
+        private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1); // Семафор для синхронизации доступа к кэшу
 
         public ReviewService(IReviewRepository reviewRepo, IMapper mapper, IMemoryCache cache)
         {
@@ -31,30 +32,50 @@ namespace AgencyWebApp.Application.Services.Implementations
 
         public async Task<List<ReviewDto>> GetAllAsync()
         {
+            // Шаг 1: Быстрая проверка кэша (без блокировки)
             if (!_cache.TryGetValue(CacheKeys.REVIEWS, out List<ReviewDto>? cachedReviews))
             {
-                // 2. Если в кэше ПУСТО (Cache Miss), идем в базу данных
-                var reviews = await _reviewRepo.GetAllAsync();
+                // Шаг 2: Если кэша нет, ждем своей очереди у "турникета"
+                await semaphore.WaitAsync();
 
-                // Маппим сущности в DTO
-                cachedReviews = _mapper.Map<List<ReviewDto>>(reviews);
+                try
+                {
+                    // Шаг 3: Двойная проверка (Double-Check Locking)
+                    // Пока мы ждали в очереди, первый поток мог уже записать данные в кэш!
+                    if (!_cache.TryGetValue(CacheKeys.REVIEWS, out cachedReviews))
+                    {
+                        Console.WriteLine("Cache Miss: Первый поток пошел в базу за данными...");
 
-                // 3. Настраиваем политику кэширования
-                var cacheOptions = new MemoryCacheEntryOptions()
-                .SetAbsoluteExpiration(TimeSpan.FromHours(1)) // Данные "протухнут" через 1 час
-                .SetSlidingExpiration(TimeSpan.FromMinutes(2))  // Если никто не заходит 2 минуты — кэш удалится раньше
-                .SetPriority(CacheItemPriority.High);           // Защищаем от случайного удаления при нехватке RAM
-                Console.WriteLine("Cache Miss: Loaded reviews from database and stored in cache.");
-                // 4. Сохраняем результат в кэш
-                _cache.Set(CacheKeys.REVIEWS, cachedReviews, cacheOptions);
+                        var reviews = await _reviewRepo.GetAllAsync();
+                        cachedReviews = _mapper.Map<List<ReviewDto>>(reviews);
+
+                        var cacheOptions = new MemoryCacheEntryOptions()
+                        .SetAbsoluteExpiration(TimeSpan.FromHours(1))
+                        .SetSlidingExpiration(TimeSpan.FromMinutes(2))
+                        .SetPriority(CacheItemPriority.High);
+
+                        _cache.Set(CacheKeys.REVIEWS, cachedReviews, cacheOptions);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Cache Hit: Мы подождали в очереди, и данные уже появились в кэше!");
+                    }
+                }
+
+                finally
+                {
+                    // Шаг 4: ОБЯЗАТЕЛЬНО освобождаем турникет для других
+                    semaphore.Release();
+                }
+            }
+            else
+            {
+                Console.WriteLine("Cache Hit: Данные взяты из кэша мгновенно.");
             }
 
-            // 5. Возвращаем либо данные из кэша, либо свежезагруженные
-            Console.WriteLine("Cache Hit: Returned reviews from cache.");
-            return cachedReviews!;
-            
-        }
+        return cachedReviews!;
 
+    }
         public async Task<ReviewDto> CreateAsync(CreateReviewDto dto)
         {
             var review = _mapper.Map<Review>(dto);

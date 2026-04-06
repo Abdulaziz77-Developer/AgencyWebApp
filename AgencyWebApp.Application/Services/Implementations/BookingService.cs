@@ -14,6 +14,7 @@ namespace AgencyWebApp.Application.Services.Implementations
         private readonly IBookingRepository _bookingRepo;
         private readonly IMapper _mapper;
         private readonly IMemoryCache _cache;
+        private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1); // Семафор для синхронизации доступа к кэшу
 
         public BookingService(IBookingRepository bookingRepo, IMapper mapper, IMemoryCache cache)
         {
@@ -32,19 +33,36 @@ namespace AgencyWebApp.Application.Services.Implementations
         {
             if(!_cache.TryGetValue(CacheKeys.BOOKINGS, out List<BookingDto>? cachedBookings))
             {
-                var bookings = await _bookingRepo.GetAllAsync();
-
-                cachedBookings = _mapper.Map<List<BookingDto>>(bookings);
-
-                var cacheOptions = new MemoryCacheEntryOptions()
-                .SetAbsoluteExpiration(TimeSpan.FromHours(1)) // Данные "протухнут" через 1 час
-                .SetSlidingExpiration(TimeSpan.FromMinutes(2))  // Если никто не заходит 2 минуты — кэш удалится раньше
-                .SetPriority(CacheItemPriority.High);           // Защищаем от случайного удаления при нехватке RAM
-                Console.WriteLine("Cache Miss: Loaded bookings from database and stored in cache.");
-                _cache.Set(CacheKeys.BOOKINGS, cachedBookings, cacheOptions);
+                await semaphore.WaitAsync();
+                try
+                {
+                    if (!_cache.TryGetValue(CacheKeys.BOOKINGS, out cachedBookings))
+                    {
+                        Console.WriteLine("Cache Miss: Первый поток пошел в базу за данными...");
+                        var bookings = await _bookingRepo.GetAllAsync();
+                        cachedBookings = _mapper.Map<List<BookingDto>>(bookings);
+                        var cacheOptions = new MemoryCacheEntryOptions()
+                        .SetAbsoluteExpiration(TimeSpan.FromHours(1)) // Данные "протухнут" через 1 час
+                        .SetSlidingExpiration(TimeSpan.FromMinutes(2))  // Если никто не заходит 2 минуты — кэш удалится раньше
+                        .SetPriority(CacheItemPriority.High);           // Защищаем от случайного удаления при нехватке RAM
+                        Console.WriteLine("Cache Miss: Loaded bookings from database and stored in cache.");
+                        _cache.Set(CacheKeys.BOOKINGS, cachedBookings, cacheOptions);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Cache Hit: data taken from cache instantly.");
+                    }
+                }
+                finally
+                {
+                    semaphore.Release();
+                }
+            }
+            else
+            {
+            Console.WriteLine("Cache Hit: Returned bookings from cache.");
             }
 
-            Console.WriteLine("Cache Hit: Returned bookings from cache.");
             return cachedBookings!;
         }
 
